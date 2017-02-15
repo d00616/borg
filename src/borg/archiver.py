@@ -1599,6 +1599,15 @@ class Archiver:
             not compress better due to the buffer size used by borg - but it wastes
             lots of CPU cycles and RAM.
 
+        zstd,[L]
+
+            Use Zstandard ("zstd") compression. Zstandard is a real-time compression
+            algorithm, providing high compression ratios. It offers a very wide range
+            of compression / speed trade-off, while being backed by a very fast
+            decoder.
+            If you do not explicitely give the compression level L (ranging from 1
+            to 22), it will use level 3.
+
         auto,C[,L]
 
             Use a built-in heuristic to decide per chunk whether to compress or not.

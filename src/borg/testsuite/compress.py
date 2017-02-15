@@ -4,6 +4,10 @@ try:
     import lzma
 except ImportError:
     lzma = None
+try:
+    import zstandard
+except ImportError:
+    zstd = None
 
 import pytest
 
@@ -63,6 +67,16 @@ def test_lzma():
     if lzma is None:
         pytest.skip("No lzma support found.")
     c = get_compressor(name='lzma')
+    cdata = c.compress(data)
+    assert len(cdata) < len(data)
+    assert data == c.decompress(cdata)
+    assert data == Compressor(**params).decompress(cdata)  # autodetect
+
+
+def test_zstd():
+    if zstd is None:
+        pytest.skip("No Zstandard support found.")
+    c = get_compressor(name='zstd')
     cdata = c.compress(data)
     assert len(cdata) < len(data)
     assert data == c.decompress(cdata)

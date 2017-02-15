@@ -680,6 +680,16 @@ def CompressionSpec(s):
         else:
             raise ValueError
         return dict(name=name, level=level)
+    if name == 'zstd':
+         if count < 2:
+             level = 3  # default value of zstd command line
+         elif count == 2:
+             level = int(values[1])
+             if not 1 <= level <= 23:
+                  raise ValueError
+         else:
+             raise ValueError
+         return dict(name=name, level=level)
     if name == 'auto':
         if 2 <= count <= 3:
             compression = ','.join(values[1:])

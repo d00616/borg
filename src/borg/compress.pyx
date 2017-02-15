@@ -3,6 +3,10 @@ try:
     import lzma
 except ImportError:
     lzma = None
+try:
+    import zstd
+except ImportError:
+    zstd = None
 
 from .helpers import Buffer
 
@@ -141,6 +145,28 @@ class LZMA(CompressorBase):
         return lzma.decompress(data)
 
 
+class ZSTD(CompressorBase):
+    """
+    zstandard compression / decompression
+    """
+    ID = b'\x28\xb5'
+    name = 'zstd'
+
+    def __init__(self, level=3, **kwargs):
+        super().__init__(**kwargs)
+        if zstd is None:
+            raise ValueError('No Zstandard support found.')
+        self.compressor = zstd.ZstdCompressor(level=level, write_checksum=True, write_content_size=True)
+        self.decompressor = zstd.ZstdDecompressor()
+
+
+    def compress(self, data):
+        return self.compressor.compress(bytes(data))
+
+    def decompress(self, data):
+        return self.decompressor.decompress(bytes(data))
+
+
 class ZLIB(CompressorBase):
     """
     zlib compression / decompression (python stdlib)
@@ -175,8 +201,9 @@ COMPRESSOR_TABLE = {
     LZ4.name: LZ4,
     ZLIB.name: ZLIB,
     LZMA.name: LZMA,
+    ZSTD.name: ZSTD,
 }
-COMPRESSOR_LIST = [LZ4, CNONE, ZLIB, LZMA, ]  # check fast stuff first
+COMPRESSOR_LIST = [LZ4, CNONE, ZSTD, ZLIB, LZMA, ]  # check fast stuff first
 
 def get_compressor(name, **kwargs):
     cls = COMPRESSOR_TABLE[name]

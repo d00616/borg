@@ -638,6 +638,9 @@ def test_compression_specs():
     assert CompressionSpec('lzma,9') == dict(name='lzma', level=9)
     with pytest.raises(ValueError):
         CompressionSpec('lzma,9,invalid')
+    assert CompressionSpec('zstd') == dict(name='zstd', level=3)
+    assert CompressionSpec('zstd,1') == dict(name='zstd', level=1)
+    assert CompressionSpec('zstd,22') == dict(name='zstd', level=22)
     with pytest.raises(ValueError):
         CompressionSpec('invalid')
 
